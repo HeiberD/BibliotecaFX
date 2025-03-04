@@ -47,7 +47,7 @@ public class DBHelper {
         return connection;
     }
 
-    // Método para cerrar la conexión (puedes llamarlo explícitamente cuando ya no necesites la conexión)
+    // Método para cerrar la conexión
     public static void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {

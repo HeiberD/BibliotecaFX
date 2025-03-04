@@ -35,7 +35,7 @@ public class PrestamoView {
         fechaPrestamoField.setPromptText("Fecha de Préstamo");
 
         DatePicker fechaDevolucionField = new DatePicker();
-        fechaDevolucionField.setPromptText("Fecha de Devolución");
+        fechaDevolucionField.setPromptText("Fecha de Devolución (Opcional)");
 
         // Botón para agregar préstamo
         Button addButton = new Button("Registrar Préstamo");
@@ -47,9 +47,9 @@ public class PrestamoView {
                 String usuarioIdText = usuarioIdField.getText();
                 String libroIdText = libroIdField.getText();
 
-                // Validar que los campos no estén vacíos
-                if (usuarioIdText.isEmpty() || libroIdText.isEmpty() || fechaPrestamoField.getValue() == null || fechaDevolucionField.getValue() == null) {
-                    System.out.println("Por favor, complete todos los campos.");
+                // Validar que los campos obligatorios no estén vacíos
+                if (usuarioIdText.isEmpty() || libroIdText.isEmpty() || fechaPrestamoField.getValue() == null) {
+                    System.out.println("Por favor, complete los campos obligatorios.");
                     return;
                 }
 
@@ -63,15 +63,18 @@ public class PrestamoView {
                 int usuarioId = Integer.parseInt(usuarioIdText);
                 int libroId = Integer.parseInt(libroIdText);
 
-                // Obtener las fechas
+                // Obtener la fecha de préstamo (Obligatoria)
                 LocalDate fechaPrestamo = fechaPrestamoField.getValue();
+
+                // Obtener la fecha de devolución (Opcional)
                 LocalDate fechaDevolucion = fechaDevolucionField.getValue();
+                Date sqlFechaDevolucion = (fechaDevolucion != null) ? Date.valueOf(fechaDevolucion) : null;
 
                 // Crear un nuevo objeto Prestamo con los datos
-                Prestamo nuevoPrestamo = new Prestamo(0, usuarioId, libroId, Date.valueOf(fechaPrestamo), Date.valueOf(fechaDevolucion));
+                Prestamo nuevoPrestamo = new Prestamo(0, usuarioId, libroId, Date.valueOf(fechaPrestamo), sqlFechaDevolucion);
 
                 // Llamar al controlador para registrar el préstamo
-                prestamoController.registrarPrestamo(nuevoPrestamo);
+                prestamoController.registrarPrestamo(libroId);
                 System.out.println("Préstamo registrado exitosamente.");
 
             } catch (NumberFormatException e) {

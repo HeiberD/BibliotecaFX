@@ -11,7 +11,7 @@ public class UsuarioController {
 
     // Método para agregar un usuario a la base de datos
     public void agregarUsuario(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nombre, correo, contraseña, numero_estudiante) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nombre, correo, contraseña, rol, numero_estudiante, fecha_registro) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBHelper.getConnection();  // Obtener la conexión
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -19,7 +19,10 @@ public class UsuarioController {
             // Establecer los valores del PreparedStatement
             stmt.setString(1, usuario.getNombre());
             stmt.setString(2, usuario.getCorreo());
-            stmt.setString(3, usuario.getContraseña());
+            stmt.setString(3, usuario.getContraseña());  // Se cambió de getPassword() a getContraseña()
+            stmt.setString(4, usuario.getRol());
+            stmt.setString(5, usuario.getNumeroEstudiante());
+            stmt.setDate(6, new java.sql.Date(usuario.getFechaRegistro().getTime()));
 
             // Ejecutar la consulta de inserción
             int rowsAffected = stmt.executeUpdate();

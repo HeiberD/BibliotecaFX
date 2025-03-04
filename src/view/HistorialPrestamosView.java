@@ -32,11 +32,11 @@ public class HistorialPrestamosView {
         TableColumn<Prestamo, Integer> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        TableColumn<Prestamo, Integer> colUsuarioId = new TableColumn<>("Usuario ID");
-        colUsuarioId.setCellValueFactory(new PropertyValueFactory<>("usuarioId"));
+        TableColumn<Prestamo, String> colUsuarioNombre = new TableColumn<>("Usuario");
+        colUsuarioNombre.setCellValueFactory(new PropertyValueFactory<>("usuarioNombre")); // ✅ Se usa usuarioNombre
 
-        TableColumn<Prestamo, Integer> colLibroId = new TableColumn<>("Libro ID");
-        colLibroId.setCellValueFactory(new PropertyValueFactory<>("libroId"));
+        TableColumn<Prestamo, String> colLibroTitulo = new TableColumn<>("Libro");
+        colLibroTitulo.setCellValueFactory(new PropertyValueFactory<>("libroTitulo")); // ✅ Se usa libroTitulo
 
         TableColumn<Prestamo, String> colFechaPrestamo = new TableColumn<>("Fecha Préstamo");
         colFechaPrestamo.setCellValueFactory(new PropertyValueFactory<>("fechaPrestamo"));
@@ -45,10 +45,10 @@ public class HistorialPrestamosView {
         colFechaDevolucion.setCellValueFactory(new PropertyValueFactory<>("fechaDevolucion"));
 
         // 🔸 **Agregar columnas a la tabla**
-        tablaHistorial.getColumns().addAll(colId, colUsuarioId, colLibroId, colFechaPrestamo, colFechaDevolucion);
+        tablaHistorial.getColumns().addAll(colId, colUsuarioNombre, colLibroTitulo, colFechaPrestamo, colFechaDevolucion);
 
-        // 🔹 **Cargar datos desde la tabla 'historial_prestamos' en la base de datos**
-        List<Prestamo> listaHistorial = prestamoController.obtenerHistorialCompleto(); // 🔴 Se llama al nuevo método
+        // 🔹 **Cargar datos desde la base de datos**
+        List<Prestamo> listaHistorial = prestamoController.obtenerHistorialCompleto(); // 🔴 Se usa el método corregido
         ObservableList<Prestamo> historialObservable = FXCollections.observableArrayList(listaHistorial);
         tablaHistorial.setItems(historialObservable);
 
