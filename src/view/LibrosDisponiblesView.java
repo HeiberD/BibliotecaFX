@@ -68,7 +68,7 @@ public class LibrosDisponiblesView {
                 LocalDate fechaPrestamo = LocalDate.now();
 
                 Prestamo nuevoPrestamo = new Prestamo(0, usuarioId, libroId, Date.valueOf(fechaPrestamo), null);
-                prestamoController.registrarPrestamo(libroId);
+                prestamoController.registrarPrestamo(usuarioId,libroId);
 
                 // Recargar la tabla de libros disponibles
                 List<Libro> nuevaListaLibros = libroController.obtenerLibrosDisponibles();

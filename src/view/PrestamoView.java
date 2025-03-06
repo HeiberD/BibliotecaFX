@@ -73,9 +73,10 @@ public class PrestamoView {
                 // Crear un nuevo objeto Prestamo con los datos
                 Prestamo nuevoPrestamo = new Prestamo(0, usuarioId, libroId, Date.valueOf(fechaPrestamo), sqlFechaDevolucion);
 
-                // Llamar al controlador para registrar el préstamo
-                prestamoController.registrarPrestamo(libroId);
-                System.out.println("Préstamo registrado exitosamente.");
+                // ✅ Llamar al controlador para registrar el préstamo con el usuarioId ingresado
+                prestamoController.registrarPrestamo(usuarioId, libroId);
+
+                System.out.println("Préstamo registrado exitosamente para el usuario ID: " + usuarioId);
 
             } catch (NumberFormatException e) {
                 System.out.println("Por favor, ingrese valores válidos para los ID de usuario y libro.");

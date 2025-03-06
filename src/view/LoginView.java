@@ -107,7 +107,15 @@ public class LoginView {
                 historialView.showHistorialWindow();
             });
 
-            layout.getChildren().addAll(btnLibros, btnUsuarios, btnPrestamos, btnHistorial);
+            Button btnGestionEstudiantes = new Button("Gestionar Estudiantes");
+            btnGestionEstudiantes.getStyleClass().add("btn-primary");
+            btnGestionEstudiantes.setOnAction(event -> {
+                GestionEstudiantesView gestionEstudiantesView = new GestionEstudiantesView();
+                gestionEstudiantesView.showGestionEstudiantesWindow();
+            });
+
+            // Agregar el nuevo botón al layout
+            layout.getChildren().addAll(btnLibros, btnUsuarios, btnPrestamos, btnHistorial, btnGestionEstudiantes);
         } else if ("ESTUDIANTE".equals(rol)) {
             // Opciones solo para el ESTUDIANTE
             Button btnLibrosDisponibles = new Button("Ver Libros Disponibles");
