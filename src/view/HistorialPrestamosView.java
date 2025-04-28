@@ -44,8 +44,11 @@ public class HistorialPrestamosView {
         TableColumn<Prestamo, String> colFechaDevolucion = new TableColumn<>("Fecha Devolución");
         colFechaDevolucion.setCellValueFactory(new PropertyValueFactory<>("fechaDevolucion"));
 
+        TableColumn<Prestamo, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
         // 🔸 **Agregar columnas a la tabla**
-        tablaHistorial.getColumns().addAll(colId, colUsuarioNombre, colLibroTitulo, colFechaPrestamo, colFechaDevolucion);
+        tablaHistorial.getColumns().addAll(colId, colUsuarioNombre, colLibroTitulo, colFechaPrestamo, colFechaDevolucion, colEstado);
 
         // 🔹 **Cargar datos desde la base de datos**
         List<Prestamo> listaHistorial = prestamoController.obtenerHistorialCompleto(); // 🔴 Se usa el método corregido

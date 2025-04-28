@@ -10,6 +10,7 @@ public class Prestamo {
     private String libroTitulo;   // Nuevo atributo para mostrar el título del libro
     private Date fechaPrestamo;
     private Date fechaDevolucion;
+    private String estado;
 
     // Constructor para registro de préstamos (usa IDs)
     public Prestamo(int id, int usuarioId, int libroId, Date fechaPrestamo, Date fechaDevolucion) {
@@ -18,15 +19,17 @@ public class Prestamo {
         this.libroId = libroId;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaDevolucion = fechaDevolucion;
+        this.estado = estado;
     }
 
     // Constructor para mostrar el historial (usa nombres y títulos en vez de IDs)
-    public Prestamo(int id, String usuarioNombre, String libroTitulo, Date fechaPrestamo, Date fechaDevolucion) {
+    public Prestamo(int id, String usuarioNombre, String libroTitulo, Date fechaPrestamo, Date fechaDevolucion, String estado) {
         this.id = id;
         this.usuarioNombre = usuarioNombre;
         this.libroTitulo = libroTitulo;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaDevolucion = fechaDevolucion;
+        this.estado = estado;
     }
 
     // Getters y Setters
@@ -50,4 +53,8 @@ public class Prestamo {
 
     public Date getFechaDevolucion() { return fechaDevolucion; }
     public void setFechaDevolucion(Date fechaDevolucion) { this.fechaDevolucion = fechaDevolucion; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
 }

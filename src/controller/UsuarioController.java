@@ -91,6 +91,58 @@ public class UsuarioController {
         }
     }
 
+    // Método para actualizar la contraseña de un estudiante
+    public boolean actualizarContraseña(int usuarioId, String contraseñaActual, String nuevaContraseña) {
+        // Validar que la nueva contraseña tenga exactamente 5 dígitos
+        if (!nuevaContraseña.matches("\\d{5}")) {
+            System.out.println("La nueva contraseña debe contener exactamente 5 números.");
+            return false;
+        }
+
+        String sqlVerificar = "SELECT contraseña FROM usuarios WHERE id = ? AND rol = 'ESTUDIANTE'";
+        String sqlActualizar = "UPDATE usuarios SET contraseña = ? WHERE id = ?";
+
+        try (Connection conn = DBHelper.getConnection();
+             PreparedStatement stmtVerificar = conn.prepareStatement(sqlVerificar)) {
+
+            stmtVerificar.setInt(1, usuarioId);
+            ResultSet rs = stmtVerificar.executeQuery();
+
+            if (rs.next()) {
+                String contraseñaBD = rs.getString("contraseña");
+
+                // Verificar si la contraseña actual ingresada es correcta
+                if (!contraseñaBD.equals(contraseñaActual)) {
+                    System.out.println("La contraseña actual es incorrecta.");
+                    return false;
+                }
+
+                // Actualizar la contraseña si la verificación fue exitosa
+                try (PreparedStatement stmtActualizar = conn.prepareStatement(sqlActualizar)) {
+                    stmtActualizar.setString(1, nuevaContraseña);
+                    stmtActualizar.setInt(2, usuarioId);
+
+                    int rowsUpdated = stmtActualizar.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        System.out.println("Contraseña actualizada correctamente.");
+                        return true;
+                    } else {
+                        System.out.println("Error al actualizar la contraseña.");
+                        return false;
+                    }
+                }
+            } else {
+                System.out.println("Usuario no encontrado o no tiene permiso.");
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar contraseña: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // ✅ Método para obtener la lista de estudiantes
     public List<Usuario> obtenerEstudiantes() {
         List<Usuario> estudiantes = new ArrayList<>();

@@ -1,17 +1,25 @@
 package view;
 
 import controller.LoginController;
-import model.Usuario;
-import model.SesionUsuario;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import model.SesionUsuario;
+import model.Usuario;
 import org.kordamp.bootstrapfx.BootstrapFX;
-import view.PrestamosEstudianteView;
-import view.DevolucionView;
+import java.util.Arrays;
+import java.util.List;
+import javafx.scene.text.Font;
+import java.util.Objects;
+
 
 public class LoginView {
 
@@ -21,51 +29,49 @@ public class LoginView {
         loginController = new LoginController();
     }
 
-    // Mostrar la ventana de login
     public void showLoginWindow(Stage primaryStage) {
+        Font.loadFont(
+                Objects.requireNonNull(getClass().getResource("/fonts/KantumruyPro-Regular.ttf")).toExternalForm(), 12
+        );
+
         VBox layout = new VBox(10);
 
-        // Campos de texto para ingresar el correo y la contraseña
         TextField correoField = new TextField();
         correoField.setPromptText("Correo");
 
-        PasswordField contraseñaField = new PasswordField();
-        contraseñaField.setPromptText("Contraseña");
+        PasswordField contrasenaField = new PasswordField();
+        contrasenaField.setPromptText("Contraseña");
 
-        // Botón para autenticar el usuario
         Button loginButton = new Button("Iniciar sesión");
 
-        // Acción al presionar el botón de login
         loginButton.setOnAction(event -> {
             String correo = correoField.getText();
-            String contraseña = contraseñaField.getText();
+            String contrasena = contrasenaField.getText();
 
-            // Crear un objeto Usuario con las credenciales ingresadas
-            Usuario usuario = new Usuario(0, "", correo, contraseña);
+            Usuario usuario = new Usuario(0, "", correo, contrasena);
 
-            // Llamar al controlador para autenticar al usuario
             boolean autenticado = loginController.autenticarUsuario(usuario);
-
             if (autenticado) {
-                System.out.println("Login exitoso");
-                showMainPage(primaryStage);  // Llamar al método que muestra la página principal según el rol
+                showMainPage(primaryStage);
             } else {
                 System.out.println("Credenciales incorrectas");
             }
         });
 
-        layout.getChildren().addAll(correoField, contraseñaField, loginButton);
-
-        // Crear y configurar la escena de login
+        layout.getChildren().addAll(correoField, contrasenaField, loginButton);
         Scene scene = new Scene(layout, 400, 250);
+        scene.getStylesheets().add(getClass().getResource("/css/global.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/login.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Login");
         primaryStage.show();
     }
 
-    // Método para mostrar la página principal según el rol del usuario autenticado
     private void showMainPage(Stage primaryStage) {
-        // Obtener el usuario autenticado desde la sesión
+        Font.loadFont(
+                Objects.requireNonNull(getClass().getResource("/fonts/KantumruyPro-Regular.ttf")).toExternalForm(), 12
+        );
+
         Usuario usuario = SesionUsuario.getInstancia().getUsuarioLogueado();
         if (usuario == null) {
             System.out.println("Error: No hay usuario autenticado.");
@@ -73,84 +79,145 @@ public class LoginView {
         }
 
         String rol = usuario.getRol();
-        System.out.println("Mostrando menú para el rol: " + rol);
+        BorderPane mainLayout = new BorderPane();
 
-        VBox layout = new VBox(10);
+        Label headerLabel = new Label("Bienvenido a BibliotecaFX - Rol: " + rol);
+        headerLabel.setStyle("-fx-font-family: 'Kantumruy Pro';");
+        HBox header = new HBox(headerLabel);
+        header.setId("header");
+
+
+        VBox sidebar = new VBox(10);
+        sidebar.setStyle("-fx-font-family: 'Kantumruy Pro'");
+        sidebar.setPadding(new Insets(10));
+        sidebar.setPadding(new Insets(40, 10, 10, 10));
+        sidebar.setId("sidebar");
+        sidebar.prefWidthProperty().bind(primaryStage.widthProperty().multiply(0.25)); // 25% del ancho
+
+
+        GridPane centerContent = new GridPane();
+        centerContent.setHgap(20);
+        centerContent.setVgap(20);
+        centerContent.setPadding(new Insets(20));
+        centerContent.setAlignment(Pos.CENTER);
+        centerContent.setStyle("-fx-background-color: #FAFAFA;"); /*color contenedor detras tarjetas */
+
+        Label footer = new Label("BibliotecaFX © 2025");
+        footer.setId("footer");
+        footer.setMaxWidth(Double.MAX_VALUE); // 💥 Hace que el Label se expanda en el BorderPane
 
         if ("ADMIN".equals(rol)) {
-            // Opciones solo para el ADMIN
+            String[][] opciones = {
+                    {"Gestionar Libros", "/images/libros.png"},
+                    {"Gestionar Usuarios", "/images/usuarios.png"},
+                    {"Gestionar Préstamos", "/images/prestamos.png"},
+                    {"Gestionar Estudiantes", "/images/estudiantes.png"},
+                    {"Gestionar Devoluciones", "/images/devoluciones.png"},
+                    {"Historial de Préstamos", "/images/historial.png"}
+            };
+
+            for (int i = 0; i < opciones.length; i++) {
+                String nombre = opciones[i][0];
+                String ruta = opciones[i][1];
+
+                VBox tarjeta = new VBox(10);
+                tarjeta.getStyleClass().add("tarjeta-dashboard");
+
+                ImageView img = new ImageView(new Image(getClass().getResource(ruta).toExternalForm()));
+                img.setFitWidth(100);
+                img.setFitHeight(100);
+
+                Label label = new Label(nombre);
+                label.getStyleClass().add("tarjeta-label");
+
+                tarjeta.getChildren().addAll(img, label);
+                tarjeta.setAlignment(Pos.CENTER);
+
+                final int index = i;
+                tarjeta.setOnMouseClicked(e -> {
+                    switch (index) {
+                        case 0 -> new LibroView().showLibroWindow();
+                        case 1 -> new UsuarioView().showUsuarioWindow();
+                        case 2 -> new PrestamoView().showPrestamoWindow();
+                        case 3 -> new GestionEstudiantesView().showGestionEstudiantesWindow();
+                        case 4 -> new GestionDevolucionesAdminView().showGestionDevolucionesAdminWindow();
+                        case 5 -> new HistorialPrestamosView().showHistorialWindow();
+                    }
+                });
+
+                centerContent.add(tarjeta, i % 3, i / 3);
+            }
+
             Button btnLibros = new Button("Gestionar Libros");
-            btnLibros.getStyleClass().add("btn-primary");
-            btnLibros.setOnAction(event -> {
-                LibroView libroView = new LibroView();
-                libroView.showLibroWindow();
-            });
+            btnLibros.setOnAction(e -> new LibroView().showLibroWindow());
 
             Button btnUsuarios = new Button("Gestionar Usuarios");
-            btnUsuarios.getStyleClass().add("btn-primary");
-            btnUsuarios.setOnAction(event -> {
-                UsuarioView usuarioView = new UsuarioView();
-                usuarioView.showUsuarioWindow();
-            });
+            btnUsuarios.setOnAction(e -> new UsuarioView().showUsuarioWindow());
 
             Button btnPrestamos = new Button("Gestionar Préstamos");
-            btnPrestamos.getStyleClass().add("btn-primary");
-            btnPrestamos.setOnAction(event -> {
-                PrestamoView prestamoView = new PrestamoView();
-                prestamoView.showPrestamoWindow();
-            });
-
-            Button btnHistorial = new Button("Historial de Préstamos");
-            btnHistorial.getStyleClass().add("btn-primary");
-            btnHistorial.setOnAction(event -> {
-                HistorialPrestamosView historialView = new HistorialPrestamosView();
-                historialView.showHistorialWindow();
-            });
+            btnPrestamos.setOnAction(e -> new PrestamoView().showPrestamoWindow());
 
             Button btnGestionEstudiantes = new Button("Gestionar Estudiantes");
-            btnGestionEstudiantes.getStyleClass().add("btn-primary");
-            btnGestionEstudiantes.setOnAction(event -> {
-                GestionEstudiantesView gestionEstudiantesView = new GestionEstudiantesView();
-                gestionEstudiantesView.showGestionEstudiantesWindow();
-            });
+            btnGestionEstudiantes.setOnAction(e -> new GestionEstudiantesView().showGestionEstudiantesWindow());
 
-            // Agregar el nuevo botón al layout
-            layout.getChildren().addAll(btnLibros, btnUsuarios, btnPrestamos, btnHistorial, btnGestionEstudiantes);
+            Button btnGestionDevoluciones = new Button("Gestionar Devoluciones");
+            btnGestionDevoluciones.setOnAction(e -> new GestionDevolucionesAdminView().showGestionDevolucionesAdminWindow());
+
+            Button btnHistorial = new Button("Historial de Préstamos");
+            btnHistorial.setOnAction(e -> new HistorialPrestamosView().showHistorialWindow());
+
+            Button btnVerificarMora = new Button("Verificar Mora");
+            btnVerificarMora.setOnAction(e -> new VerificarMoraView().showVerificarMoraWindow());
+
+            // Aplicar ancho con bucle
+            List<Button> botonesSidebar = Arrays.asList(
+                    btnLibros, btnUsuarios, btnPrestamos,
+                    btnGestionEstudiantes, btnGestionDevoluciones,
+                    btnHistorial, btnVerificarMora
+            );
+
+            for (Button b : botonesSidebar) {
+                b.setPrefWidth(200);
+                b.getStyleClass().add("button-sidebar");
+            }
+
+            sidebar.getChildren().addAll(
+                    btnLibros,
+                    btnUsuarios,
+                    btnPrestamos,
+                    btnGestionEstudiantes,
+                    btnGestionDevoluciones,
+                    btnHistorial,
+                    btnVerificarMora
+            );
         } else if ("ESTUDIANTE".equals(rol)) {
-            // Opciones solo para el ESTUDIANTE
             Button btnLibrosDisponibles = new Button("Ver Libros Disponibles");
-            btnLibrosDisponibles.getStyleClass().add("btn-primary");
-            btnLibrosDisponibles.setOnAction(event -> {
-                LibrosDisponiblesView librosView = new LibrosDisponiblesView();
-                librosView.showLibrosDisponiblesWindow();
-            });
+            btnLibrosDisponibles.setOnAction(e -> new LibrosDisponiblesView().showLibrosDisponiblesWindow());
 
             Button btnMisPrestamos = new Button("Mis Préstamos");
-            btnMisPrestamos.getStyleClass().add("btn-primary");
-            btnMisPrestamos.setOnAction(event -> {
-                PrestamosEstudianteView prestamosView = new PrestamosEstudianteView();
-                prestamosView.showPrestamosEstudianteWindow();
-            });
+            btnMisPrestamos.setOnAction(e -> new PrestamosEstudianteView().showPrestamosEstudianteWindow());
 
             Button btnDevolucion = new Button("Gestionar Devolución");
-            btnDevolucion.getStyleClass().add("btn-primary");
-            btnDevolucion.setOnAction(event -> {
-                DevolucionView devolucionView = new DevolucionView();
-                devolucionView.showDevolucionWindow();
-            });
+            btnDevolucion.setOnAction(e -> new DevolucionView().showDevolucionWindow());
 
-            layout.getChildren().addAll(btnLibrosDisponibles, btnMisPrestamos, btnDevolucion);
-        } else {
-            System.out.println("Rol desconocido. No se pueden mostrar opciones.");
+            Button btnPerfil = new Button("Mi Perfil");
+            btnPerfil.setOnAction(e -> new PerfilEstudianteView().showPerfilEstudianteWindow());
+
+            sidebar.getChildren().addAll(btnLibrosDisponibles, btnMisPrestamos, btnDevolucion, btnPerfil);
         }
 
-        // Crear y configurar la escena
-        Scene scene = new Scene(layout, 300, 300);
+        mainLayout.setTop(header);
+        mainLayout.setLeft(sidebar);
+        mainLayout.setCenter(centerContent);
+        mainLayout.setBottom(footer);
+
+        Scene scene = new Scene(mainLayout, 900, 600);
+        scene.getStylesheets().add(getClass().getResource("/css/global.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/login.css").toExternalForm());
         scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
-        // Cambiar la escena a la ventana principal
-        primaryStage.setTitle("BibliotecaFX");
         primaryStage.setScene(scene);
+        primaryStage.setTitle("BibliotecaFX - Inicio");
         primaryStage.show();
     }
 }

@@ -34,9 +34,6 @@ public class PrestamoView {
         DatePicker fechaPrestamoField = new DatePicker();
         fechaPrestamoField.setPromptText("Fecha de Préstamo");
 
-        DatePicker fechaDevolucionField = new DatePicker();
-        fechaDevolucionField.setPromptText("Fecha de Devolución (Opcional)");
-
         // Botón para agregar préstamo
         Button addButton = new Button("Registrar Préstamo");
 
@@ -66,12 +63,8 @@ public class PrestamoView {
                 // Obtener la fecha de préstamo (Obligatoria)
                 LocalDate fechaPrestamo = fechaPrestamoField.getValue();
 
-                // Obtener la fecha de devolución (Opcional)
-                LocalDate fechaDevolucion = fechaDevolucionField.getValue();
-                Date sqlFechaDevolucion = (fechaDevolucion != null) ? Date.valueOf(fechaDevolucion) : null;
-
                 // Crear un nuevo objeto Prestamo con los datos
-                Prestamo nuevoPrestamo = new Prestamo(0, usuarioId, libroId, Date.valueOf(fechaPrestamo), sqlFechaDevolucion);
+                Prestamo nuevoPrestamo = new Prestamo(0, usuarioId, libroId, Date.valueOf(fechaPrestamo), null);
 
                 // ✅ Llamar al controlador para registrar el préstamo con el usuarioId ingresado
                 prestamoController.registrarPrestamo(usuarioId, libroId);
@@ -84,7 +77,7 @@ public class PrestamoView {
         });
 
         // Añadir los controles al layout
-        layout.getChildren().addAll(usuarioIdField, libroIdField, fechaPrestamoField, fechaDevolucionField, addButton);
+        layout.getChildren().addAll(usuarioIdField, libroIdField, fechaPrestamoField, addButton);
 
         // Crear y configurar la escena
         Scene scene = new Scene(layout, 400, 250);
